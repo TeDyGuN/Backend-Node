@@ -10,7 +10,18 @@
     "author": "Ted Carrasco",
     "license": "ISC",
     "dependencies": {
+        "bcryptjs": "^2.4.3",
+        "body-parser": "^1.18.2",
         "express": "^4.16.3",
-        "mongoose": "^5.0.16"
+        "jsonwebtoken": "^8.2.1",
+        "mongoose-unique-validator": "^2.0.1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git:https://github.com/TeDyGuN/Backend-Node.git"
+    },
+    "devDependencies": {
+        "mongoose": "^5.0.16",
+        "nodemon": "^1.17.3"
     }
 }
