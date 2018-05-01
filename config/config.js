@@ -1,1 +1,1 @@
-module.exports.SEED = '-WEA-SS-este-ASOPOTAMADRE';
+module.exports.SEED = 'ASOPOTAMADREWEYCONCHATUMARE';
