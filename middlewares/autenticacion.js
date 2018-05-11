@@ -24,5 +24,21 @@ exports.verificaToken = function(req, res, next) {
 
 
     });
+};
+// ==========================================
+//  Verificar ADMIN
+// ==========================================
+exports.verificaAdmin = function(req, res, next) {
 
+    var usuario = req.usuario;
+    if (usuario.role === 'ADMIN_ROLE') {
+        next();
+    } else {
+        return res.status(401).json({
+            ok: false,
+            mensaje: 'Token incorrecto',
+            errors: { message: 'No ADMIN' }
+        });
+
+    }
 }

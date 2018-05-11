@@ -6,6 +6,21 @@ var app = express();
 var Usuario = require('../models/usuario');
 var SEED = require('../config/config').SEED;
 
+var mdAutenticacion = require('../middlewares/autenticacion');
+
+/**
+ **  Renovacion de Token 
+ **/
+app.get('/renuevaToken', mdAutenticacion.verificaToken, (req, res) => {
+    var token = jwt.sign({ usuario: req.usuario }, SEED, { expiresIn: 14400 }); // 4 Horas
+
+    res.status(200).json({
+        ok: true,
+        usuario: req.usuario,
+        token: token
+    });
+});
+
 /**
  * Autentificacion Google
  **/
@@ -58,13 +73,15 @@ app.post('/google', async(req, res) => {
                         errors: err
                     });
                 } else {
+
                     var token = jwt.sign({ Usuario: usuarioDB }, SEED, { expiresIn: 14400 }); // 4 Horas
 
                     res.status(200).json({
                         ok: true,
                         usuario: usuarioDB,
                         token: token,
-                        id: usuarioDB.id
+                        id: usuarioDB.id,
+                        menu: obtenerMenu(usuarioDB.role)
                     });
                 }
             } else {
@@ -82,7 +99,8 @@ app.post('/google', async(req, res) => {
                         ok: true,
                         usuario: usuarioDB,
                         token: token,
-                        id: usuarioDB.id
+                        id: usuarioDB.id,
+                        menu: obtenerMenu(usuarioDB.role)
                     });
                 })
             }
@@ -130,9 +148,39 @@ app.post('/', (req, res) => {
             ok: true,
             usuario: UsuarioDB,
             token: token,
-            id: UsuarioDB.id
+            id: UsuarioDB.id,
+            menu: obtenerMenu(UsuarioDB.role)
         });
     })
 });
+
+function obtenerMenu(ROLE) {
+
+    var menu = [{
+            titulo: 'Principal',
+            icono: 'mdi mdi-gauge',
+            submenu: [
+                { titulo: 'Dashboard', url: '/dashboard' },
+                { titulo: 'ProgressBar', url: '/progress' },
+                { titulo: 'Graficas', url: '/grafica' },
+                { titulo: 'Promesas', url: '/promesas' },
+                { titulo: 'RXJS', url: '/rxjs' },
+            ]
+        },
+        {
+            titulo: 'Mantenimientos',
+            icono: 'mdi mdi-folder-lock-open',
+            submenu: [
+                //{ titulo: 'Usuarios', url: '/usuarios' },
+                { titulo: 'Hospitales', url: '/hospitales' },
+                { titulo: 'Medicos', url: '/medicos' }
+            ]
+        }
+    ];
+    if (ROLE === 'ADMIN_ROLE') {
+        menu[1].submenu.unshift({ titulo: 'Usuarios', url: '/usuarios' });
+    }
+    return menu;
+}
 
 module.exports = app;

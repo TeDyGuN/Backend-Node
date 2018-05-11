@@ -15,7 +15,7 @@ var mdAutentificacion = require('../middlewares/autenticacion');
 app.get('/', (req, res, next) => {
     var desde = req.query.desde || 0;
     desde = Number(desde);
-    Usuario.find({}, 'nombre email img role')
+    Usuario.find({}, 'nombre email img role google')
         .skip(desde)
         .limit(5)
         .exec(
@@ -63,7 +63,9 @@ app.put('/:id', mdAutentificacion.verificaToken, (req, res) => {
         }
         usuario.nombre = body.nombre;
         usuario.email = body.email;
-        usuario.role = body.role;
+        if (body.role != null) {
+            usuario.role = body.role;
+        }
         usuario.save((err, usuarioGuardado) => {
             if (err) {
                 return res.status(400).json({
@@ -84,7 +86,7 @@ app.put('/:id', mdAutentificacion.verificaToken, (req, res) => {
 /**
  * Crear un Nuevo Usuario
  */
-app.post('/', mdAutentificacion.verificaToken, (req, res, next) => {
+app.post('/', (req, res, next) => {
     var body = req.body;
     var usuario = new Usuario({
         nombre: body.nombre,
@@ -112,7 +114,7 @@ app.post('/', mdAutentificacion.verificaToken, (req, res, next) => {
 /*
  * Borrar un Usuario por el ID
  */
-app.delete('/:id', mdAutentificacion.verificaToken, (req, res) => {
+app.delete('/:id', [mdAutentificacion.verificaToken, mdAutentificacion.verificaAdmin], (req, res) => {
     var id = req.params.id;
     Usuario.findByIdAndRemove(id, (err, ususarioEliminado) => {
         if (err) {
